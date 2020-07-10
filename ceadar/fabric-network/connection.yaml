@@ -64,12 +64,12 @@ channels:
     # operational decisions to share loads from applications among the orderers.  The values must
     # be "names" of orgs defined under "organizations/peers"
     orderers:
-      - orderer0.example.com
-      - orderer1.example.com
+      - orderer1.akp.com
+#      - orderer2.akp.com
 
     # Required. list of peers from participating orgs
     peers:
-      peer0.org1.example.com:
+      peer0.orga.akp.com:
         # [Optional]. will this peer be sent transaction proposals for endorsement? The peer must
         # have the chaincode installed. The app can also use this property to decide which peers
         # to send the chaincode install request. Default: true
@@ -88,51 +88,53 @@ channels:
         # produce events but the app typically only needs to connect to one to listen to events.
         # Default: true
         eventSource: true
-        discover: true
+        
+        #Always turn it off to avoid service discovery
+        discover: false
 
-      peer1.org1.example.com:
-        endorsingPeer: true
-        chaincodeQuery: false
-        ledgerQuery: true
-        eventSource: true
-        discover: true
-      peer0.org2.example.com:
+#      peer1.orga.akp.com:
+#        endorsingPeer: true
+#        chaincodeQuery: false
+#        ledgerQuery: true
+#        eventSource: true
+#        discover: false
+      peer0.orgb.akp.com:
         endorsingPeer: true
         chaincodeQuery: true
         ledgerQuery: true
         eventSource: true
-        discover: true
-      peer0.org2.example.com:
-        endorsingPeer: true
-        chaincodeQuery: false
-        ledgerQuery: true
-        eventSource: true
-        discover: true
+        discover: false
+#      peer1.orgb.akp.com:
+#        endorsingPeer: true
+#        chaincodeQuery: false
+#        ledgerQuery: true
+#        eventSource: true
+#        discover: false
 
     # [Optional]. what chaincodes are expected to exist on this channel? The application can use
     # this information to validate that the target peers are in the expected state by comparing
     # this list with the query results of getInstalledChaincodes() and getInstantiatedChaincodes()
     chaincodes:
       # the format follows the "cannonical name" of chaincodes by fabric code
-      - marbles:0.1
+      - mycc:0.1
 
 #
 # list of participating organizations in this network
 #
 organizations:
   Org1:
-    mspid: Org1MSP
+    mspid: OrgAMSP
 
     peers:
-      - peer0.org1.example.com
-      - peer1.org1.example.com
+      - peer0.orga.akp.com
+#      - peer1.orga.akp.com
     # [Optional]. Certificate Authorities issue certificates for identification purposes in a Fabric based
     # network. Typically certificates provisioning is done in a separate process outside of the
     # runtime network. Fabric-CA is a special certificate authority that provides a REST APIs for
     # dynamic certificate management (enroll, revoke, re-enroll). The following section is only for
     # Fabric-CA servers.
     certificateAuthorities:
-      - ca.org1.example.com
+      - ca.orga.akp.com
 
     # [Optional]. If the application is going to make requests that are reserved to organization
     # administrators, including creating/updating channels, installing/instantiating chaincodes, it
@@ -142,9 +144,9 @@ organizations:
     # this way. The SDK should allow applications to set the org admin identity via APIs, and only use
     # this route as an alternative when it exists.
     adminPrivateKey:
-      path: ceadar/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/48ce78c94ed5ecb9ea9dfcbfc8baf44972846997ec94ead99183e52a5e1ad604_sk
+      path: ceadar/crypto/orga/adminuser/msp/keystore/27b106ea35f05f8df8e3371bf02a176965d476064cbc2dcddaa8f0bd7c21023c_sk
     signedCert:
-      path: ceadar/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/Admin@org1.example.com-cert.pem
+      path: ceadar/crypto/orga/adminuser/msp/signcerts/cert.pem
 
   # the profile will contain public information about organizations other than the one it belongs to.
   # These are necessary information to make transaction lifecycles work, including MSP IDs and
@@ -152,16 +154,16 @@ organizations:
   # information reserved for members of the organization, such as admin key and certificate,
   # fabric-ca registrar enroll ID and secret, etc.
   Org2:
-    mspid: Org2MSP
+    mspid: OrgBMSP
     peers:
-      - peer0.org2.example.com
-      - peer1.org2.example.com
+      - peer0.orgb.akp.com
+#      - peer1.orgb.akp.com
     certificateAuthorities:
-      - ca.org2.example.com
+      - ca.orgb.akp.com
     adminPrivateKey:
-      path: ceadar/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/keystore/58af06fee9da83d81fe370d50e3fc296ccfb2ee6a129fa183ebdb1c8ff8ba6a7_sk
+      path: ceadar/crypto/orgb/adminuser/msp/keystore/7c2cffeece4fab8a0f1719ba72cf5afce213b3f770ccf9b3b0ed04ac868a8010_sk
     signedCert:
-      path: ceadar/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp/signcerts/Admin@org2.example.com-cert.pem
+      path: ceadar/crypto/orgb/adminuser/msp/signcerts/cert.pem
 
 #
 # List of orderers to send transaction and channel create/update requests to. For the time
@@ -169,88 +171,88 @@ organizations:
 # SDK is implementation specific. Consult each SDK's documentation for its handling of orderers.
 #
 orderers:
-  orderer0.example.com:
-    url: grpcs://localhost:7050
+  orderer1.akp.com:
+    url: grpcs://192.168.0.175:7050
 
     # these are standard properties defined by the gRPC library
     # they will be passed in as-is to gRPC client constructor
-    grpcOptions:
-      ssl-target-name-override: orderer0.example.com
+    #grpcOptions:
+    #  ssl-target-name-override: orderer0.akp.com
 
     tlsCACerts:
-      path: ceadar/ordererOrganizations/orderers/orderer0.example.com/msp/tlscacerts/tlsca.example.com-cert
-  orderer1.example.com:
-    url: grpcs://localhost:9050
-    grpcOptions:
-      ssl-target-name-override: orderer1.example.com
+      path: ceadar/crypto/orderer1/msp/tlscacerts/tlsca-cert.pem
+#  orderer2.akp.com:
+#    url: grpcs://192.168.0.175:9050
+#    grpcOptions:
+#      ssl-target-name-override: orderer2.akp.com
 
-    tlsCACerts:
-      path: ceadar/ordererOrganizations/orderers/orderer1.example.com/msp/tlscacerts/tlsca.example.com-cert
+#    tlsCACerts:
+#      path: ceadar/crypto/orderer1/msp/tlscacerts/tlsca-cert.pem
 #
 # List of peers to send various requests to, including endorsement, query
 # and event listener registration.
 #
 peers:
-  peer0.org1.example.com:
+  peer0.orga.akp.com:
     # this URL is used to send endorsement and query requests
-    url: grpcs://localhost:7051
-    grpcOptions:
-      ssl-target-name-override: peer0.org1.example.com
-      request-timeout: 120
+    url: grpcs://192.168.0.175:7051
+    #grpcOptions:
+    #  ssl-target-name-override: peer0.orga.akp.com
+    #  request-timeout: 120
     tlsCACerts:
-      path: ceadar/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp/tlscacerts/tlsca.org1.example.com-cert.pem
+      path: ceadar/crypto/orga/msp/tlscacerts/tlsca-cert.pem
 
-  peer1.org1.example.com:
-    url: grpcs://localhost:7052
-    grpcOptions:
-      ssl-target-name-override: peer1.org1.example.com
-    tlsCACerts:
-      path: ceadar/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/msp/tlscacerts/tlsca.org1.example.com-cert.pem
+#  peer1.orga.akp.com:
+#    url: grpcs://192.168.0.175:7052
+#    grpcOptions:
+#      ssl-target-name-override: peer1.orga.akp.com
+#    tlsCACerts:
+#      path: ceadar/crypto/orga/msp/tlscacerts/tlsca-cert.pem
   
-  peer0.org2.example.com:
-    url: grpcs://localhost:9051
-    grpcOptions:
-      ssl-target-name-override: peer0.org2.example.com
+  peer0.orgb.akp.com:
+    url: grpcs://192.168.0.175:9051
+    #grpcOptions:
+    #  ssl-target-name-override: peer0.orgb.akp.com
     tlsCACerts:
-      path: ceadar/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/msp/tlscacerts/tlsca.org2.example.com-cert.pem
+      path: ceadar/crypto/orgb/msp/tlscacerts/tlsca-cert.pem
   
-  peer1.org2.example.com:
-    url: grpcs://localhost:9052
-    grpcOptions:
-      ssl-target-name-override: peer1.org2.example.com
-    tlsCACerts:
-      path: ceadar/peerOrganizations/org2.example.com/peers/peer1.org2.example.com/msp/tlscacerts/tlsca.org2.example.com-cert.pem
+#  peer1.orgb.akp.com:
+#    url: grpcs://192.168.0.175:9052
+#    grpcOptions:
+#      ssl-target-name-override: peer1.orgb.akp.com
+#    tlsCACerts:
+#      path: ceadar/crypto/orgb/msp/tlscacerts/tlsca-cert.pem
 #
 # Fabric-CA is a special kind of Certificate Authority provided by Hyperledger Fabric which allows
 # certificate management to be done via REST APIs. Application may choose to use a standard
 # Certificate Authority instead of Fabric-CA, in which case this section would not be specified.
 #
 certificateAuthorities:
-  ca.org1.example.com:
-    url: https://localhost:7054
+  ca.orga.akp.com:
+    url: https://192.168.0.175:7010
     # the properties specified under this object are passed to the 'http' client verbatim when
     # making the request to the Fabric-CA server
     httpOptions:
       verify: false
     tlsCACerts:
-      path:  ceadar/peerOrganizations/org1.example.com/tlsca/tlsca.org1.example.com-cert.pem
+      path:  ceadar/crypto/orga/msp/tlscacerts/tlsca-cert.pem
 
     # Fabric-CA supports dynamic user enrollment via REST APIs. A "root" user, a.k.a registrar, is
     # needed to enroll and invoke new users.
     registrar:
       - enrollId: admin
-        enrollSecret: adminpw
+        enrollSecret: adminroot
     # [Optional] The optional name of the CA.
-    caName: ca.org1.example.com
+    caName: ca.orga.akp.com
 
-  ca.org2.example.com:
-    url: https://localhost:9054
+  ca.orgb.akp.com:
+    url: https://192.168.0.175:9010
     httpOptions:
       verify: false
     tlsCACerts:
-      path:  ceadar/peerOrganizations/org2.example.com/tlsca/tlsca.org2.example.com-cert.pem
+      path:  ceadar/crypto/orga/msp/tlscacerts/tlsca-cert.pem
     registrar:
       - enrollId: admin
-        enrollSecret: adminpw
+        enrollSecret: adminroot
     # [Optional] The optional name of the CA.
-    caName: ca.org2.example.com
+    caName: ca.orgb.akp.com
