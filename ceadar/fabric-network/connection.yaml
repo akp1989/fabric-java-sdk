@@ -116,7 +116,7 @@ channels:
     # this list with the query results of getInstalledChaincodes() and getInstantiatedChaincodes()
     chaincodes:
       # the format follows the "cannonical name" of chaincodes by fabric code
-      - mycc:0.1
+      - blockchain-smart-contract:0.0.1
 
 #
 # list of participating organizations in this network

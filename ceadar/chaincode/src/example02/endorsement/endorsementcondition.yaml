@@ -1,0 +1,8 @@
+---
+identities:
+      orga: {"role": {"name": "member", "mspId": "OrgAMSP"}}
+      orgb: {"role": {"name": "member", "mspId": "OrgBMSP"}}
+policy:
+    2-of:
+      - signed-by: "orga"
+      - signed-by: "orgb"

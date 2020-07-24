@@ -24,22 +24,10 @@ public class CAClient {
 	String caUrl;
 	Properties caProperties;
 	HFCAClient instance;
+	
+	
 
-
-	/**
-	 * Constructor
-	 * 
-	 * @param caUrl 
-	 * @param caProperties
-	 * @throws MalformedURLException
-	 * @throws InvocationTargetException 
-	 * @throws NoSuchMethodException 
-	 * @throws InvalidArgumentException 
-	 * @throws CryptoException 
-	 * @throws ClassNotFoundException 
-	 * @throws InstantiationException 
-	 * @throws IllegalAccessException 
-	 */
+	// Constructor
 	public CAClient(String caUrl, Properties caProperties) throws MalformedURLException, IllegalAccessException, InstantiationException, ClassNotFoundException, CryptoException, InvalidArgumentException, NoSuchMethodException, InvocationTargetException {
 		this.caUrl = caUrl;
 		this.caProperties = caProperties;
@@ -73,7 +61,7 @@ public class CAClient {
 			enrollementRequest.addHost("192.168.0.66");
 			
 		}
-		Enrollment enrollment = instance.enroll(username, secret);
+		Enrollment enrollment = instance.enroll(username, secret, enrollementRequest);
 		return enrollment;
 	}
 	

@@ -1,4 +1,4 @@
-package com.akp.fabric;
+package com.java.user;
 
 import java.io.Serializable;
 import java.security.PrivateKey;
