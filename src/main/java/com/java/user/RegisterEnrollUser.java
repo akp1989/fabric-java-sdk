@@ -12,48 +12,70 @@ public class RegisterEnrollUser {
 		try {
 			
 			Properties properties = new Properties();
-			properties.put("pemFile","ceadar/crypto/orga/msp/cacerts/ca-cert.pem");
+			properties.put("pemFile","ceadar/crypto/org1/msp/cacerts/ca-cert.pem");
 			
-			CAClient caClient = new CAClient(Config.CA_ORGA_URL, properties);
+			CAClient caClient = new CAClient(Config.CA_ORG_URL, properties);
 			
-			// Enroll Admin to OrgAMSP
+			// Enroll Admin to Org1MSP
 			UserContext adminUserContext = new UserContext();
 			adminUserContext.setName(Config.ADMIN);
-			adminUserContext.setAffiliation(Config.ORGA);
-			adminUserContext.setMspId(Config.ORGA_MSP);
+			adminUserContext.setAffiliation(Config.ORG1);
+			adminUserContext.setMspId(Config.ORG1_MSP);
 			caClient.setAdminUserContext(adminUserContext);
 			adminUserContext = caClient.enrollAdminUser(Config.ADMIN, Config.ADMIN_PASSWORD);
 			
-			// Register and Enroll user to OrgAMSP
+			// Register and Enroll user to Org1MSP
 			UserContext userContext = new UserContext();
-			String name = "client1";
-			userContext.setName(name);
-			userContext.setAffiliation(Config.ORGA);
-			userContext.setMspId(Config.ORGA_MSP);
-
-			String eSecret = caClient.registerUser(name,null);
-			if(eSecret != null)
-			userContext = caClient.enrollUser(userContext, eSecret);
+//			String name = "client1_org1";
+//			userContext.setName(name);
+//			userContext.setAffiliation(Config.ORG1);
+//			userContext.setMspId(Config.ORG1_MSP);
+//
+//			String eSecret = caClient.registerUser(name,null);
+//			if(eSecret != null)
+//			userContext = caClient.enrollUser(userContext, eSecret);
 			
 			
-			// Enroll Admin to OrgBMSP
+			// Enroll Admin to Org2MSP
 			properties.clear();
-			properties.put("pemFile","ceadar/crypto/orgb/msp/cacerts/ca-cert.pem");
-			caClient = new CAClient(Config.CA_ORGB_URL, properties);
+			properties.put("pemFile","ceadar/crypto/org2/msp/cacerts/ca-cert.pem");
+			caClient = new CAClient(Config.CA_ORG_URL, properties);
 			adminUserContext = new UserContext();
 			adminUserContext.setName(Config.ADMIN);
-			adminUserContext.setAffiliation(Config.ORGB);
-			adminUserContext.setMspId(Config.ORGB_MSP);
+			adminUserContext.setAffiliation(Config.ORG2);
+			adminUserContext.setMspId(Config.ORG2_MSP);
 			caClient.setAdminUserContext(adminUserContext);
 			adminUserContext = caClient.enrollAdminUser(Config.ADMIN, Config.ADMIN_PASSWORD);
 			
-			// Register and Enroll user to OrgBMSP
+			// Register and Enroll user to Org2MSP
 			userContext = new UserContext();
-			name = "client1";
+			String name = "client1_org2";
 			userContext.setName(name);
-			userContext.setAffiliation(Config.ORGB);
-			userContext.setMspId(Config.ORGB_MSP);
-
+			userContext.setAffiliation(Config.ORG2);
+			userContext.setMspId(Config.ORG2_MSP);
+			
+			String eSecret = caClient.registerUser(name,null);
+			if(eSecret != null)
+				userContext = caClient.enrollUser(userContext, eSecret);
+			
+			// Enroll Admin to Org3MSP
+//			properties.clear();
+//			properties.put("pemFile","ceadar/crypto/org3/msp/cacerts/ca-cert.pem");
+//			caClient = new CAClient(Config.CA_ORG_URL, properties);
+//			adminUserContext = new UserContext();
+//			adminUserContext.setName(Config.ADMIN);
+//			adminUserContext.setAffiliation(Config.ORG3);
+//			adminUserContext.setMspId(Config.ORG3_MSP);
+//			caClient.setAdminUserContext(adminUserContext);
+//			adminUserContext = caClient.enrollAdminUser(Config.ADMIN, Config.ADMIN_PASSWORD);
+//			
+//			// Register and Enroll user to Org3MSP
+//			userContext = new UserContext();
+//			name = "client1_org3";
+//			userContext.setName(name);
+//			userContext.setAffiliation(Config.ORG3);
+//			userContext.setMspId(Config.ORG3_MSP);
+//
 			eSecret = caClient.registerUser(name,null);
 			if(eSecret != null)
 				userContext = caClient.enrollUser(userContext, eSecret);

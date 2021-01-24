@@ -29,24 +29,30 @@ public class DeployInstantiateChaincode {
 			Wallet wallet = Wallet.createFileSystemWallet(Config.WALLET_PATH);
 			
 			//Load the admin user from the Wallet
-			UserContext orgaAdmin = new UserContext();
-			orgaAdmin.setMspId(Config.ORGA_MSP);
-			orgaAdmin.setName(Config.ORGA+"_admin");
-			orgaAdmin.setIdentity(wallet.get(orgaAdmin.getName()));
+			UserContext org1Admin = new UserContext();
+			org1Admin.setMspId(Config.ORG1_MSP);
+			org1Admin.setName(Config.ORG1+"_admin");
+			org1Admin.setIdentity(wallet.get(org1Admin.getName()));
 			
 			//Load the admin user from the Wallet
-			UserContext orgbAdmin = new UserContext();
-			orgbAdmin.setMspId(Config.ORGB_MSP);
-			orgbAdmin.setName(Config.ORGB+"_admin");
-			orgbAdmin.setIdentity(wallet.get(orgbAdmin.getName()));
+			UserContext org2Admin = new UserContext();
+			org2Admin.setMspId(Config.ORG2_MSP);
+			org2Admin.setName(Config.ORG2+"_admin");
+			org2Admin.setIdentity(wallet.get(org2Admin.getName()));
+			
+			//Load the admin user from the Wallet
+			UserContext org3Admin = new UserContext();
+			org3Admin.setMspId(Config.ORG3_MSP);
+			org3Admin.setName(Config.ORG3+"_admin");
+			org3Admin.setIdentity(wallet.get(org3Admin.getName()));
 			
 			Properties properties = new Properties();
 			/* Properties to pass the TLS CA certificates for SSL connection */
-			properties.put("pemFile","ceadar/crypto/orga/msp/tlscacerts/tlsca-cert.pem");
+			properties.put("pemFile","ceadar/crypto/org1/msp/tlscacerts/tlsca-cert.pem");
 			
 			
 			// Create a fabric client instance for the first organization
-			FabricClient fabClient = new FabricClient(orgaAdmin);
+			FabricClient fabClient = new FabricClient(org1Admin);
 
 			Channel clientChannel = fabClient.getInstance().newChannel(Config.CHANNEL_NAME);
 			
@@ -54,21 +60,26 @@ public class DeployInstantiateChaincode {
 			Orderer orderer = fabClient.getInstance().newOrderer(Config.ORDERER_NAME, Config.ORDERER_URL,properties);
 			
 			// Define the peers
-			Peer peer0_orga = fabClient.getInstance().newPeer(Config.ORGA_PEER_0, Config.ORGA_PEER_0_URL, properties);
-			Peer peer0_orgb = fabClient.getInstance().newPeer(Config.ORGB_PEER_0, Config.ORGB_PEER_0_URL, properties);
+			Peer peer0_org1 = fabClient.getInstance().newPeer(Config.ORG1_PEER_0, Config.ORG1_PEER_0_URL, properties);
+			Peer peer0_org2 = fabClient.getInstance().newPeer(Config.ORG2_PEER_0, Config.ORG2_PEER_0_URL, properties);
+			Peer peer0_org3 = fabClient.getInstance().newPeer(Config.ORG3_PEER_0, Config.ORG3_PEER_0_URL, properties);
 			
 			// Creating the event hubs and intializing the channel
 			clientChannel.addOrderer(orderer);
-			clientChannel.addPeer(peer0_orga);
-			clientChannel.addPeer(peer0_orgb);
+			clientChannel.addPeer(peer0_org1);
+			clientChannel.addPeer(peer0_org2);
+			clientChannel.addPeer(peer0_org3); 
 			clientChannel.initialize();
 			
 			
-			List<Peer> orgaPeers = new ArrayList<Peer>();
-			orgaPeers.add(peer0_orga);
+			List<Peer> org1Peers = new ArrayList<Peer>();
+			org1Peers.add(peer0_org1);
 			
-			List<Peer> orgbPeers = new ArrayList<Peer>();
-			orgbPeers.add(peer0_orgb);
+			List<Peer> org2Peers = new ArrayList<Peer>();
+			org2Peers.add(peer0_org2);
+			
+			List<Peer> org3Peers = new ArrayList<Peer>();
+			org3Peers.add(peer0_org3);
 			
 			ChaincodeID chaincodeID;
 			Collection<ProposalResponse> response;
@@ -77,20 +88,21 @@ public class DeployInstantiateChaincode {
 				chaincodeID = ChaincodeID.newBuilder().setName(Config.CHAINCODE_1_NAME).setVersion(Config.CHAINCODE_1_VERSION).build();
 			}else
 				chaincodeID = ChaincodeID.newBuilder().setName(Config.CHAINCODE_1_NAME).setVersion(Config.CHAINCODE_1_VERSION).setPath(Config.CHAINCODE_1_PATH).build();
+			
 			response = fabClient.deployChainCode(Config.CHAINCODE_1_NAME,
 					chaincodeID, Config.CHAINCODE_ROOT_DIR, Type.NODE,
-					Config.CHAINCODE_1_VERSION, orgaPeers);
+					Config.CHAINCODE_1_VERSION, org1Peers);
 		 
 			for (ProposalResponse res : response) {
 				Logger.getLogger(DeployInstantiateChaincode.class.getName()).log(Level.INFO,
 						Config.CHAINCODE_1_NAME + "- Chain code deployment " + res.getStatus());
 			}
 
-			fabClient.getInstance().setUserContext(orgbAdmin);
+			fabClient.getInstance().setUserContext(org2Admin);
 			
 			response = fabClient.deployChainCode(Config.CHAINCODE_1_NAME,
 					chaincodeID, Config.CHAINCODE_ROOT_DIR, Type.NODE,
-					Config.CHAINCODE_1_VERSION, orgbPeers);
+					Config.CHAINCODE_1_VERSION, org2Peers);
 			
 			
 			for (ProposalResponse res : response) {
@@ -98,6 +110,15 @@ public class DeployInstantiateChaincode {
 						Config.CHAINCODE_1_NAME + "- Chain code deployment " + res.getStatus());
 			}
 			
+			response = fabClient.deployChainCode(Config.CHAINCODE_1_NAME,
+					chaincodeID, Config.CHAINCODE_ROOT_DIR, Type.NODE,
+					Config.CHAINCODE_1_VERSION, org3Peers);
+			
+			
+			for (ProposalResponse res : response) {
+				Logger.getLogger(DeployInstantiateChaincode.class.getName()).log(Level.INFO,
+						Config.CHAINCODE_1_NAME + "- Chain code deployment " + res.getStatus());
+			}
 
 			ChannelClient channelClient = new ChannelClient(clientChannel.getName(), clientChannel, fabClient);
 

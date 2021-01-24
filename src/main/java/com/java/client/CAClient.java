@@ -84,7 +84,6 @@ public class CAClient {
 			EnrollmentRequest enrollmentRequest = new EnrollmentRequest();
 			enrollmentRequest.addHost("localhost");
 			enrollmentRequest.addHost("192.168.0.175");
-			enrollmentRequest.addHost("192.168.0.66");
 			
 			// Enroll the ID against the CA
 			Enrollment adminEnrollment = instance.enroll(username, password,enrollmentRequest);

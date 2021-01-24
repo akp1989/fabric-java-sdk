@@ -58,7 +58,7 @@ public class CAClient {
 		if(properties != null && !properties.isEmpty())
 		{
 			enrollementRequest.addHost("localhost");
-			enrollementRequest.addHost("192.168.0.66");
+			enrollementRequest.addHost("192.168.0.175");
 			
 		}
 		Enrollment enrollment = instance.enroll(username, secret, enrollementRequest);

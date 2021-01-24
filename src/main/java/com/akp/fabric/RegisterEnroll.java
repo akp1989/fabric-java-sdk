@@ -32,28 +32,28 @@ public class RegisterEnroll {
 		CAClient caClient = new CAClient("https://192.168.0.175:7010", properties);
 		
 		// Create a wallet for managing identities
-		Wallet wallet = Wallet.createFileSystemWallet(Paths.get("ceadar","wallet","orga"));
+		Wallet wallet = Wallet.createFileSystemWallet(Paths.get("ceadar","gatewayWalletTest"));
 		//Wallet wallet = Wallet.createFileSystemWallet(Paths.get("ceadar","test","wallet"));
 		// Check to see if we've already enrolled the admin user.
-		boolean adminExists = wallet.exists("caadmin"); 
+		boolean adminExists = wallet.exists("orga_caadmin"); 
 		if (!adminExists) {
 			//If not enroll the admin user
 			Enrollment enrollment = caClient.enrollUser("admin", "adminroot",new EnrollmentRequest(), null); 
 			Identity caadmin = Identity.createIdentity("OrgAMSP", enrollment.getCert(),enrollment.getKey());
-		    wallet.put("caadmin", caadmin); 
+		    wallet.put("orga_caadmin", caadmin); 
 		 } 
-		 Identity adminIdentity = wallet.get("caadmin");
+		 Identity adminIdentity = wallet.get("orga_caadmin");
 		 //Set the admin user context with which we will register new ID's
 		 UserContext adminUser = new UserContext(); adminUser.setName("admin");
 		 adminUser.setIdentity(adminIdentity);
 		 adminUser.setMspId(adminIdentity.getMspId()); 
 		 
-		 boolean userExists = wallet.exists("orgaclient1");
+		 boolean userExists = wallet.exists("orgb_client01");
 		 if(userExists)
-			 wallet.remove("orgaclient1");
+			 wallet.remove("orgb_client01");
 
-		 String responsesecret = caClient.registerUser("orgaclient3","orga","client",adminUser,null);
-		 System.out.println(responsesecret);
+		 //String responsesecret = caClient.registerUser("orgbclient01","orgb","client",adminUser,null);
+		 //System.out.println(responsesecret);
     
 	     // Enroll the User and add it to wallet
 		  EnrollmentRequest enrollmentRequest = new EnrollmentRequest();
@@ -61,12 +61,11 @@ public class RegisterEnroll {
 		  enrollmentRequest.addHost("localhost");
 		  enrollmentRequest.addHost("192.168.0.175");
 		  enrollmentRequest.addHost("0.0.0.0");
-		  enrollmentRequest.addHost("*.orga.akp.com");
+		  enrollmentRequest.addHost("*.orgb.akp.com");
 		  //enrollmentRequest.setProfile("tls");
-		  Enrollment enrollment = caClient.enrollUser("orgaclient3", responsesecret, enrollmentRequest, null);
-		  Identity user = Identity.createIdentity("OrgAMSP", enrollment.getCert(),
-		  enrollment.getKey()); 
-		  wallet.put("orgaclient1", user); 
+		  Enrollment enrollment = caClient.enrollUser("orgbclient01", "wZVzWLKHSgFp", enrollmentRequest, null);
+		  Identity user = Identity.createIdentity("OrgBMSP", enrollment.getCert(),enrollment.getKey()); 
+		  wallet.put("orgb_client01", user); 
 		  System.out.println(enrollment.getCert().toString());
 	}
 }

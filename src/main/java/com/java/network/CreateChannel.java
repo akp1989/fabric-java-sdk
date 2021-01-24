@@ -30,24 +30,24 @@ public class CreateChannel {
 			Wallet wallet = Wallet.createFileSystemWallet(Config.WALLET_PATH);
 			
 			//Load the admin user from the Wallet
-			UserContext orgaAdmin = new UserContext();
-			orgaAdmin.setMspId(Config.ORGA_MSP);
-			orgaAdmin.setName(Config.ORGA+"_admin");
-			orgaAdmin.setIdentity(wallet.get(orgaAdmin.getName()));
+			UserContext org1Admin = new UserContext();
+			org1Admin.setMspId(Config.ORG1_MSP);
+			org1Admin.setName(Config.ORG1+"_admin");
+			org1Admin.setIdentity(wallet.get(org1Admin.getName()));
 			
 			//Load the admin user from the Wallet
-			UserContext orgbAdmin = new UserContext();
-			orgbAdmin.setMspId(Config.ORGB_MSP);
-			orgbAdmin.setName(Config.ORGB+"_admin");
-			orgbAdmin.setIdentity(wallet.get(orgbAdmin.getName()));
+			UserContext org2Admin = new UserContext();
+			org2Admin.setMspId(Config.ORG2_MSP);
+			org2Admin.setName(Config.ORG2+"_admin");
+			org2Admin.setIdentity(wallet.get(org2Admin.getName()));
 			
 			Properties properties = new Properties();
 			/* Properties to pass the TLS CA certificates for SSL connection */
-			properties.put("pemFile","ceadar/crypto/orga/msp/tlscacerts/tlsca-cert.pem");
+			properties.put("pemFile","ceadar/crypto/org1/msp/tlscacerts/tlsca-cert.pem");
 
 			
 			// Create a fabric client instance for the first organization
-			FabricClient fabClient = new FabricClient(orgaAdmin);
+			FabricClient fabClient = new FabricClient(org1Admin);
 
 			// Choose the orderer for channel creation 
 			Orderer orderer = fabClient.getInstance().newOrderer(Config.ORDERER_NAME, Config.ORDERER_URL,properties);
@@ -56,31 +56,33 @@ public class CreateChannel {
 			ChannelConfiguration channelConfiguration = new ChannelConfiguration(new File(Config.CHANNEL_CONFIG_PATH+Config.CHANNEL_NAME+".tx"));
 			
 			// Get the channel configuration signed by organization admin that is going to create the channel
-			byte[] channelConfigurationSignatures = fabClient.getInstance().getChannelConfigurationSignature(channelConfiguration, orgaAdmin);
+			byte[] channelConfigurationSignatures = fabClient.getInstance().getChannelConfigurationSignature(channelConfiguration, org1Admin);
 
 			// Create the channel
 			Channel mychannel = fabClient.getInstance().newChannel(Config.CHANNEL_NAME, orderer, channelConfiguration,
 					channelConfigurationSignatures);
 
 			// Define the peers
-			Peer peer0_orga = fabClient.getInstance().newPeer(Config.ORGA_PEER_0, Config.ORGA_PEER_0_URL, properties);
-			Peer peer0_orgb = fabClient.getInstance().newPeer(Config.ORGB_PEER_0, Config.ORGB_PEER_0_URL, properties);
+			Peer peer0_org1 = fabClient.getInstance().newPeer(Config.ORG1_PEER_0, Config.ORG1_PEER_0_URL, properties);
+			Peer peer0_org2 = fabClient.getInstance().newPeer(Config.ORG2_PEER_0, Config.ORG2_PEER_0_URL, properties);
+			Peer peer0_org3 = fabClient.getInstance().newPeer(Config.ORG3_PEER_0, Config.ORG3_PEER_0_URL, properties); 
 			
 			// Join the first organization peers
-			mychannel.joinPeer(peer0_orga);
+			mychannel.joinPeer(peer0_org1);
 			
 			// Add the orderer to the channel and initialize the channel
 			mychannel.addOrderer(orderer);
 			mychannel.initialize();
 			
 			// Create a fabric client instance for the next organization
-			fabClient.getInstance().setUserContext(orgbAdmin);
+			fabClient.getInstance().setUserContext(org2Admin);
 			
 			//Get the already created channel 
 			mychannel = fabClient.getInstance().getChannel(Config.CHANNEL_NAME);
 			
 			// Join the next organization peers
-			mychannel.joinPeer(peer0_orgb);
+			mychannel.joinPeer(peer0_org2);
+			mychannel.joinPeer(peer0_org3);
 			
 			Logger.getLogger(CreateChannel.class.getName()).log(Level.INFO, "Channel created "+mychannel.getName());
             
