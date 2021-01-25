@@ -20,6 +20,9 @@ import org.hyperledger.fabric.sdk.BlockInfo;
 import org.hyperledger.fabric.sdk.BlockchainInfo;
 import org.hyperledger.fabric.sdk.Channel;
 
+import com.java.chaincode.QueryBlockchain;
+import com.java.util.BlockchainUtil;
+
 public class Chaincode {
 
 	static {
@@ -34,62 +37,52 @@ public class Chaincode {
 		Path networkConfigPath = Paths.get("ceadar", "fabric-network", "connection.yaml");
  
 		Gateway.Builder builder = Gateway.createBuilder();
-		builder.identity(wallet, "orgb_client01").networkConfig(networkConfigPath).discovery(false);
+		builder.identity(wallet, "org1_client1_org1").networkConfig(networkConfigPath).discovery(false);
 
 		// create a gateway connection
 		try (Gateway gateway = builder.connect()) {
 
 			// get the network and contract
 			Network network = gateway.getNetwork("testchannel");
+ 
+			Contract contract = network.getContract("privateasset","AssetContract"); 
+			Channel channelTest = network.getChannel(); 
+			
+			//Possible invoke transactions 
+			//Transaction invokeTransaction = contract.createTransaction("assetCreate");
+			//Transaction invokeTransaction = contract.createTransaction("assetUpdate");
+			//Transaction invokeTransaction = contract.createTransaction("assetUpdatePrivate");
+			Transaction invokeTransaction = contract.createTransaction("assetDelete");
+			
+			//Possible query transactions
+			//Transaction queryTransaction = contract.createTransaction("assetRead");
+			//Transaction queryTransaction = contract.createTransaction("assetReadPrivate");
+			Transaction queryTransaction = contract.createTransaction("getTransactionHistory");
 
-			Contract contract = network.getContract("blockchain-smart-contracts","ProductKeyBatchRequestContract");
-			//Contract contract = network.getContract("blockchain-smart-contracts","ProductKeyContract");
-			Channel channelTest = network.getChannel();
-			//QueryByChaincodeRequest queryRequest = new QueryByChaincodeRequest();
-			Transaction invokeTransaction = contract.createTransaction("createProductKeyBatchRequest");
-			//Transaction invokeTransaction = contract.createTransaction("createProductKey");
-			Transaction queryTransaction = contract.createTransaction("readProductKeyBatchRequest");
-			 
-			//Transaction queryTransaction = contract.createTransaction("readProductKey");
 			byte[] result;
 			
 			Map<String,byte[]> transientMap = new HashMap<>();
 			Encoder encoder = Base64.getEncoder();
 			String transientString = new String();
 			
-//			transientString = "10";	
-//			transientMap.put("quantity",transientString.getBytes());
-//			transientString = "sku2";
-//			transientMap.put("sku",transientString.getBytes());
-//			transientString = "batch2";
-//			transientMap.put("batchID",transientString.getBytes());
-			
-//			transientString = "key2";
-//			transientMap.put("keyNumber",transientString.getBytes()); 
-//			transientString = "sku2"; 
-//			transientMap.put("sKU",transientString.getBytes());
-//			transientString = "batch1"; 
-//			transientMap.put("batchID",transientString.getBytes());
+			transientString = "gatewayprice00";	
+			transientMap.put("assetPrice",transientString.getBytes());
+
 			
 			
-			//invokeTransaction.setTransient(transientMap);
-			//result = invokeTransaction.submit("productKeyBatchRequestId:2","OrgAMSP","OrgBMSP");
-			//result = invokeTransaction.submit("productKeyId:2","OrgAMSP","OrgBMSP");
- 
+			invokeTransaction.setTransient(transientMap);
+			//result = invokeTransaction.submit("assetID:gateway002","org1","called from org1");
+			//result = invokeTransaction.submit("assetID:gateway001","price001");
+			result = invokeTransaction.submit("assetID:gateway002");
+			System.out.println(new String(result));
 			
-			//result = queryTransaction.submit("productKeyBatchRequestId:1");
+			result = queryTransaction.submit("assetID:gateway002");
+			System.out.println(new String(result));
 			
-			//System.out.println(new String(result));
-			
-			BlockchainInfo blockchainInfo = channelTest.queryBlockchainInfo();
-			Long blockHeight = blockchainInfo.getHeight();
-			byte[] currentBlockHash = blockchainInfo.getCurrentBlockHash();
-			byte[] previousBlockHash = blockchainInfo.getPreviousBlockHash();
-	
-			System.out.println("Current block height is : " + blockHeight + " and hash is :"+currentBlockHash);
-			
-			BlockInfo blockInfo = channelTest.queryBlockByHash(currentBlockHash);
-			System.out.println("The transaction for current hash is :" + channelTest.queryBlockByHash(currentBlockHash));
+
+//			BlockInfo blockInfo = channelTest.queryBlockByTransactionID("9de043f5d5f6c4a3aa52494c4c504c0845bb1a70d5c3a0b1b20a807eeef0040b");
+//			BlockchainUtil blockchainUtil = new BlockchainUtil();
+//			System.out.println("The transaction for current hash is :" + blockchainUtil.processBlock(blockInfo));
 		}
 	}
 
