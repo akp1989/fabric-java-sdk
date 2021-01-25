@@ -110,8 +110,7 @@ channels:
     # this list with the query results of getInstalledChaincodes() and getInstantiatedChaincodes()
     chaincodes:
       # the format follows the "cannonical name" of chaincodes by fabric code
-      - blockchain-smart-contract:0.0.1
-
+      - privateasset
 #
 # list of participating organizations in this network
 #
@@ -181,7 +180,7 @@ organizations:
 #
 orderers:
   orderer1.ceadar.org:
-    url: grpcs://192.168.0.175:7050
+    url: grpcs://localhost:7050
 
     # these are standard properties defined by the gRPC library
     # they will be passed in as-is to gRPC client constructor
@@ -198,7 +197,7 @@ orderers:
 peers:
   peer0.org1.ceadar.org:
     # this URL is used to send endorsement and query requests
-    url: grpcs://192.168.0.175:7051
+    url: grpcs://localhost:7051
     #grpcOptions:
     #  ssl-target-name-override: peer0.org1.ceadar.org
     #  request-timeout: 120
@@ -206,14 +205,14 @@ peers:
       path: ceadar/crypto/org1/msp/tlscacerts/tlsca-cert.pem
 
   peer0.org2.ceadar.org:
-    url: grpcs://192.168.0.175:9051
+    url: grpcs://localhost:9051
     #grpcOptions:
     #  ssl-target-name-override: peer0.org2.ceadar.org
     tlsCACerts:
       path: ceadar/crypto/org2/msp/tlscacerts/tlsca-cert.pem
 
   peer0.org3.ceadar.org:
-    url: grpcs://192.168.0.175:11051
+    url: grpcs://localhost:11051
     #grpcOptions:
     #  ssl-target-name-override: peer0.org2.ceadar.org
     tlsCACerts:
@@ -226,7 +225,7 @@ peers:
 #
 certificateAuthorities:
   org.ca.com:
-    url: https://192.168.0.175:7710
+    url: https://localhost:7710
     # the properties specified under this object are passed to the 'http' client verbatim when
     # making the request to the Fabric-CA server
     httpOptions:
